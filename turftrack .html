@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TurfTrack</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#060a08;--card:#0e1613;--card2:#14201b;--line:#1f3029;--g:#39ff6a;--tx:#f2f7f4;--mut:#8a9c93;--red:#ff4d5a;--am:#ffc233;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:#060a08}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--tx);font:500 15px/1.35 Barlow,system-ui,sans-serif;display:flex;justify-content:center}
+#app{width:100%;max-width:440px;min-height:100vh;padding:14px 14px 96px}
+h1,h2,.big,.num{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:700}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px;margin-bottom:10px}
+.row{display:flex;align-items:center;gap:10px}.sp{justify-content:space-between}.col{flex:1;min-width:0}
+.mut{color:var(--mut);font-size:13px}.g{color:var(--g)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border-radius:14px;font-weight:600;background:var(--card2);border:1px solid var(--line)}
+.btn.p{background:var(--g);color:#04120a;border-color:var(--g);font-size:17px}
+.btn.o{border-color:#1d6b39;color:var(--g);background:#0b2016}
+.btn.d{color:var(--red);border-color:#5a232a}
+.btn.s{width:auto;padding:9px 14px;font-size:14px}
+.grid{display:grid;gap:10px;grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+.tile{text-align:center;padding:12px 6px}.tile .num{font-size:34px;line-height:1}
+.hd{display:flex;align-items:center;gap:10px;margin:4px 0 14px}.hd h2{font-size:26px;flex:1}
+.ib{width:42px;height:42px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:18px}
+.logo{font-size:30px;font-family:'Barlow Condensed';font-weight:700}.logo b{color:var(--g)}
+.av{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#16372a;display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--g);flex:none;border:1px solid var(--line)}
+.pill{padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;border:1px solid var(--line);color:var(--mut)}
+.pill.A{color:var(--g);border-color:#1d6b39}.pill.N{color:var(--red);border-color:#6b2029}.pill.L{color:var(--am);border-color:#6b5420}
+.chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px}
+.chip{padding:8px 14px;border-radius:99px;background:var(--card);border:1px solid var(--line);white-space:nowrap;font-size:14px}
+.chip.on{background:var(--g);color:#04120a;border-color:var(--g);font-weight:600}
+input,select{width:100%;padding:13px;border-radius:12px;background:var(--card2);border:1px solid var(--line);color:var(--tx);font:inherit;margin-top:6px}
+label{display:block;margin-top:12px;font-size:13px;color:var(--mut)}
+.score{font-size:76px;line-height:1;letter-spacing:2px}
+.tm{font-size:34px;color:var(--g)}
+.bar{height:6px;border-radius:9px;background:var(--line);overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--g);transition:width .3s}
+.live{color:#04120a;background:var(--g);padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700}.live.off{background:var(--line);color:var(--mut)}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:440px;display:grid;grid-template-columns:repeat(4,1fr);background:#0a110e;border-top:1px solid var(--line);padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));z-index:5}
+nav button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--mut)}nav button span{font-size:20px}nav .on{color:var(--g)}
+.fab{position:fixed;right:max(18px,calc(50% - 202px));bottom:calc(86px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;background:var(--g);color:#04120a;font-size:32px;z-index:4;box-shadow:0 0 22px #39ff6a66}
+#modal{position:fixed;inset:0;background:#000b;z-index:10;display:none;align-items:flex-end;justify-content:center}
+#modal.on{display:flex}.sheet{width:100%;max-width:440px;max-height:92vh;overflow:auto;background:#0b130f;border:1px solid var(--line);border-radius:22px 22px 0 0;padding:16px 16px 28px}
+.sheet h2{font-size:26px;margin-bottom:4px}
+.toast{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:var(--g);color:#04120a;padding:10px 18px;border-radius:12px;font-weight:600;z-index:40;max-width:90%}
+.toast.e{background:var(--red);color:#fff}
+.splash{position:fixed;inset:0;background:radial-gradient(circle at 50% 35%,#0f3a22,#050806 70%);z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:opacity .5s}
+.splash .logo{font-size:58px}.empty{text-align:center;color:var(--mut);padding:26px 10px}.empty div{font-size:38px}
+.tro{border-radius:18px;padding:14px;margin-bottom:10px;border:1px solid}
+.pitch{background:linear-gradient(#0d3b21,#0a2c19);border:1px solid #1d6b39;border-radius:14px;padding:12px;display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.pitch div{text-align:center;font-size:12px;width:62px}
+.tab{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.x{color:var(--mut);font-size:18px;padding:6px 8px}
+@media print{body{background:#fff;color:#000}nav,.noprint,.fab,.hd .ib{display:none}.card{border-color:#999;background:#fff}.mut{color:#444}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<div id="app"></div><div id="modal"></div>
+<div class="splash" id="sp"><svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="#39ff6a" stroke-width="1.4"><circle cx="12" cy="12" r="10"/><path d="M12 7l4 3-1.5 4.5h-5L8 10z"/></svg><div class="logo">Turf<b>Track</b></div><div class="mut">Play · Track · Celebrate</div></div>
+<script>
+const $=s=>document.querySelector(s),uid=()=>Math.random().toString(36).slice(2,9);
+const E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const fd=d=>new Date(d+'T00:00').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'short',year:'numeric'});
+const blank=()=>({players:[],teams:[],matches:[],att:{},motm:{}});
+let S;try{S=JSON.parse(localStorage.getItem('tt2'))||blank()}catch(e){S=blank()}
+const save=()=>{try{localStorage.setItem('tt2',JSON.stringify(S))}catch(e){toast('Storage is full. Use smaller photos.',1)}};
+let view='home',sub=null,D=today(),F='all',Q='',scope='day',lb='g',tmp=null,evS=null;
+const P=id=>S.players.find(p=>p.id==id)||{n:'Removed player',id},T=id=>S.teams.find(t=>t.id==id)||{n:'Removed team',c:'#888',pl:[]};
+const M=id=>S.matches.find(m=>m.id==id);
+const dm=d=>S.matches.filter(m=>m.d==d).sort((a,b)=>a.ts-b.ts),started=ms=>ms.filter(m=>m.st!='new');
+function toast(t,e){const d=document.createElement('div');d.className='toast'+(e?' e':'');d.textContent=t;document.body.append(d);setTimeout(()=>d.remove(),2600)}
+const av=(p,s=40)=>p.ph?`<img class="av" style="width:${s}px;height:${s}px" src="${p.ph}" alt="">`:`<span class="av" style="width:${s}px;height:${s}px;font-size:${s/2.6}px">${E((p.n||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase())}</span>`;
+const jer=(c,s=44)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24"><path fill="${c}" d="M8 3 3 6l2 4 3-1v12h8V9l3 1 2-4-5-3a4 4 0 0 1-8 0z"/></svg>`;
+function stats(ms){const r={},g=id=>r[id]||(r[id]={g:0,a:0,m:0,y:0,r:0,o:0});
+ms.forEach(m=>{[...m.lh,...m.la].forEach(id=>g(id).m++);m.ev.forEach(e=>{const x=g(e.p);if(e.t=='goal'){x.g++;if(e.a)g(e.a).a++}else if(e.t=='y')x.y++;else if(e.t=='r')x.r++;else if(e.t=='og')x.o++})});return r}
+const sc=m=>{let h=0,a=0;m.ev.forEach(e=>{if(e.t=='goal'||e.t=='og'){const s=e.t=='goal'?e.s:(e.s=='H'?'A':'H');s=='H'?h++:a++}});return[h,a]};
+function motm(ms){const pt={},add=(i,v)=>pt[i]=(pt[i]||0)+v;ms.forEach(m=>{const[h,a]=sc(m),w=h>a?'H':a>h?'A':0;(w=='H'?m.lh:w=='A'?m.la:[]).forEach(i=>add(i,1));m.ev.forEach(e=>{if(e.t=='goal'){add(e.p,3);e.a&&add(e.a,2)}else if(e.t=='r')add(e.p,-2);else if(e.t=='y')add(e.p,-.5);else if(e.t=='og')add(e.p,-2)})});return Object.entries(pt).sort((a,b)=>b[1]-a[1])}
+function topOf(st,f){const a=Object.entries(st).map(([i,x])=>[i,f(x)]).filter(x=>x[1]>0);if(!a.length)return null;const mx=Math.max(...a.map(x=>x[1]));return{v:mx,ids:a.filter(x=>x[1]==mx).map(x=>x[0])}}
+const tcol=(id,ms)=>{for(const m of [...ms].reverse()){if(m.lh.includes(id))return T(m.h).c;if(m.la.includes(id))return T(m.a).c}return '#39ff6a'};
+const cur=m=>m.el+(m.run?(Date.now()-m.t0)/1000:0),mmss=s=>{s=Math.floor(s);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+/* alarm: vibration + sound at full time */
+let AC;function unlock(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();AC.resume()}catch(e){}}
+function beep(f,t,d){if(!AC)return;const o=AC.createOscillator(),g=AC.createGain();o.type='square';o.frequency.value=f;o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.25,t);g.gain.linearRampToValueAtTime(0,t+d);o.start(t);o.stop(t+d)}
+function alarm(){try{navigator.vibrate&&navigator.vibrate([500,200,500,200,900])}catch(e){}unlock();if(AC){const t=AC.currentTime;[0,.8,1.6].forEach(o=>{beep(880,t+o,.28);beep(1175,t+o+.32,.4)})}}
+function finish(m,auto){m.el=auto?m.dur*60:Math.min(cur(m),m.dur*60);m.run=false;m.st='done';save();if(auto){alarm();mod(`<h2>Full time</h2><p class="mut">${m.dur} minutes are up.</p><div class="card tile" style="margin-top:12px"><div class="row sp"><b>${E(T(m.h).n)}</b><span class="big num" style="font-size:44px">${sc(m).join(' - ')}</span><b>${E(T(m.a).n)}</b></div></div><button class="btn p" onclick="closeM();go('match','${m.id}')">View match</button>`)}render()}
+setInterval(()=>{S.matches.forEach(m=>{if(m.st=='live'&&m.run){if(cur(m)>=m.dur*60)finish(m,1);else if(view=='match'&&sub==m.id){const t=$('#tm'),b=$('#pb');if(t)t.textContent=mmss(Math.max(0,m.dur*60-cur(m)));if(b)b.style.width=Math.min(100,cur(m)/(m.dur*.6))+'%';const em=$('#em');if(em&&evS&&!evS.eid&&!em.dataset.t)em.value=Math.floor(cur(m)/60)+1}}})},250);
+function go(v,s){view=v;sub=s;scrollTo(0,0);render()}
+function mod(h){const m=$('#modal');m.innerHTML=`<div class="sheet">${h}</div>`;m.classList.add('on')}
+function closeM(){$('#modal').classList.remove('on');$('#modal').innerHTML=''}
+let _ak;function ask(t,f){_ak=f;mod(`<h2>Are you sure?</h2><p class="mut" style="margin:6px 0 14px">${E(t)}</p><div class="grid"><button class="btn" onclick="closeM()">Cancel</button><button class="btn d" onclick="closeM();_ak()">Confirm</button></div>`)}
+$('#modal').addEventListener('click',e=>{if(e.target.id=='modal')closeM()});
+const hd=(t,b,x='')=>`<div class="hd">${b?`<button class="ib" onclick="go('${b}')">‹</button>`:''}<h2>${t}</h2>${x}</div>`;
+const empty=(i,t)=>`<div class="empty"><div>${i}</div><p>${t}</p></div>`;
+function render(){const f={home:Home,matches:Matches,players:Players,stats:Stats,teams:Teams,match:Match,awards:Awards,report:Report}[view]();
+const tab={teams:'home',match:'matches',awards:'stats',report:'stats'}[view]||view;
+$('#app').innerHTML=f+(view=='players'?`<button class="fab" onclick="pModal()">+</button>`:'')+`<nav class="noprint">${[['home','⌂','Home'],['matches','▤','Matches'],['players','☺','Players'],['stats','▥','Stats']].map(x=>`<button class="${tab==x[0]?'on':''}" onclick="go('${x[0]}')"><span>${x[1]}</span>${x[2]}</button>`).join('')}</nav>`}
+const mrow=m=>{const[h,a]=sc(m);return`<div class="card row sp" onclick="go('match','${m.id}')">${jer(T(m.h).c,34)}<div class="col"><b>${E(T(m.h).n)}</b> <span class="mut">vs</span> <b>${E(T(m.a).n)}</b><div class="mut">${m.st=='done'?'Completed':m.st=='live'?'Live':'Not started'} · ${m.dur} min</div></div><span class="num big" style="font-size:30px">${h} - ${a}</span>${jer(T(m.a).c,34)}</div>`};
+/* HOME */
+function Home(){const ms=dm(today()),live=ms.find(m=>m.st=='live'),at=S.att[today()]||{},n=S.players.filter(p=>at[p.id]=='A').length;
+return`<div class="row sp" style="margin-bottom:12px"><div class="logo">Turf<b>Track</b></div><span class="mut">Organizer mode</span></div>
+<div class="card row sp" style="border-color:#1d6b39"><div><div class="mut">Current Sunday session</div><b>${fd(today())}</b></div><span class="g" style="font-size:24px">▦</span></div>
+<div class="grid g3"><div class="card tile"><div class="num g">${n}</div><div class="mut">Available</div></div><div class="card tile" onclick="go('teams')"><div class="num" style="color:#4da3ff">${S.teams.length}</div><div class="mut">Teams</div></div><div class="card tile"><div class="num" style="color:#c77dff">${ms.filter(m=>m.st=='done').length}</div><div class="mut">Matches done</div></div></div>
+<div class="row sp" style="margin:6px 0 8px"><b>Live match</b><span class="live ${live?'':'off'}">${live?'LIVE':'NONE'}</span></div>
+${live?mrow(live):`<div class="card mut">No match is live. Start one from Matches.</div>`}
+<div class="grid" style="margin-top:4px"><button class="btn o" onclick="go('players');pModal()">+ Add player</button><button class="btn o" onclick="go('teams');tModal()">+ Create team</button><button class="btn o" onclick="nmModal()">▶ Start match</button><button class="btn o" onclick="go('stats')">▥ View stats</button></div>
+<div style="margin:16px 0 8px"><b>Recent matches</b></div>${S.matches.length?[...S.matches].sort((a,b)=>b.ts-a.ts).slice(0,3).map(mrow).join(''):empty('⚽','No matches yet. Add players and teams, then start your first match.')}`}
+/* PLAYERS */
+const stl={A:'Available',N:'Absent',L:'Late'};
+function plist(){const st=stats(started(S.matches)),at=S.att[today()]||{};
+const l=S.players.filter(p=>p.n.toLowerCase().includes(Q.toLowerCase())&&(F=='all'||(F=='U'?!at[p.id]:at[p.id]==F)));
+return l.length?l.map(p=>{const x=st[p.id]||{g:0,a:0,m:0};return`<div class="card row" onclick="pModal('${p.id}')">${av(p,46)}<div class="col"><b>${E(p.n)}</b><div class="mut">${p.j?'#'+E(p.j)+' · ':''}G ${x.g} · A ${x.a} · M ${x.m}</div></div><button class="pill ${at[p.id]||''}" onclick="event.stopPropagation();cyc('${p.id}')">${stl[at[p.id]]||'Not set'}</button></div>`}).join(''):empty('☺',S.players.length?'No players match this filter.':'No players yet. Tap + to add your first player.')}
+function Players(){const at=S.att[today()]||{},c=k=>S.players.filter(p=>at[p.id]==k).length;
+return hd('Players')+`<input id="q" placeholder="Search players" value="${E(Q)}" oninput="Q=this.value;$('#pl').innerHTML=plist()" style="margin:0 0 10px"><div class="chips">${[['all','All'],['A','Available ('+c('A')+')'],['N','Absent ('+c('N')+')'],['L','Late ('+c('L')+')'],['U','Not set']].map(x=>`<button class="chip ${F==x[0]?'on':''}" onclick="F='${x[0]}';render()">${x[1]}</button>`).join('')}</div><div class="mut" style="margin-bottom:8px">${c('A')} players available · tap a status to change it</div><div id="pl">${plist()}</div>`}
+function cyc(id){const a=S.att[today()]=S.att[today()]||{},o=[undefined,'A','L','N'];const n=o[(o.indexOf(a[id])+1)%4];n?a[id]=n:delete a[id];save();render()}
+function pModal(id){const p=id?P(id):{};tmp=p.ph||null;
+mod(`<h2>${id?'Edit player':'Add player'}</h2><div class="row" style="margin-top:10px"><span id="pv">${av({n:p.n||'+',ph:tmp},64)}</span><label class="btn s" style="margin:0;color:var(--tx)">Add photo<input type="file" accept="image/*" hidden onchange="photo(this)"></label></div>
+<label>Name</label><input id="pn" value="${E(p.n||'')}" placeholder="Player name"><label>Jersey number (optional)</label><input id="pj" type="number" value="${E(p.j||'')}" placeholder="10"><label>Team (optional)</label><select id="pt"><option value="">No team yet</option>${S.teams.map(t=>`<option value="${t.id}" ${t.pl.includes(p.id)?'selected':''}>${E(t.n)}</option>`).join('')}</select>
+<button class="btn p" style="margin-top:16px" onclick="pSave('${id||''}')">Save player</button>${id?`<button class="btn d" style="margin-top:10px" onclick="pDel('${id}')">Delete player</button>`:''}`)}
+function photo(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),s=Math.min(1,200/Math.min(im.width,im.height));c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);tmp=c.toDataURL('image/jpeg',.75);$('#pv').innerHTML=av({n:'x',ph:tmp},64)};im.src=r.result};r.readAsDataURL(f)}
+function pSave(id){const n=$('#pn').value.trim(),j=$('#pj').value.trim();if(!n)return toast('Enter the player’s name.',1);
+if(S.players.some(p=>p.id!=id&&p.n.toLowerCase()==n.toLowerCase()))return toast('A player with this name already exists.',1);
+let pid=id;if(id){Object.assign(P(id),{n,j,ph:tmp})}else{pid=uid();S.players.push({id:pid,n,j,ph:tmp});(S.att[today()]=S.att[today()]||{})[pid]='A'}
+const tt=$('#pt').value;S.teams.forEach(t=>{t.pl=t.pl.filter(x=>x!=pid);if(t.id==tt)t.pl.push(pid)});save();closeM();toast('Player saved');render()}
+function pDel(id){ask('Delete this player? Their past goals will show as “Removed player”.',()=>{S.players=S.players.filter(p=>p.id!=id);S.teams.forEach(t=>t.pl=t.pl.filter(x=>x!=id));save();render()})}
+/* TEAMS */
+const dots=['#2f7bff','#ff3b4a','#22c55e','#a855f7','#ffb020','#14b8a6'];
+function Teams(){return hd('Teams','home',`<button class="btn s o" onclick="tModal()">+ Create</button>`)+(S.teams.length?S.teams.map(t=>`<div class="card"><div class="row">${jer(t.c,52)}<div class="col"><b style="font-size:18px">${E(t.n)}</b><div class="mut">${t.pl.length} players</div></div><button class="ib" onclick="tModal('${t.id}')">✎</button></div><div class="row sp" style="margin-top:8px"><div class="row" style="gap:4px">${t.pl.slice(0,5).map(i=>av(P(i),26)).join('')}</div><button class="btn s o" onclick="lineup('${t.id}')">Manage lineup</button></div></div>`).join(''):empty('👕','No teams yet. Create two or more teams, then add players.'))}
+function tModal(id){const t=id?T(id):{n:'',c:dots[S.teams.length%6]};
+mod(`<h2>${id?'Edit team':'Create team'}</h2><label>Team name</label><input id="tn" value="${E(t.n)}" placeholder="Team name"><label>Team color</label><div class="row" style="margin-top:6px;flex-wrap:wrap">${dots.map(c=>`<button onclick="$('#tc').value='${c}'" style="width:42px;height:42px;border-radius:50%;background:${c}"></button>`).join('')}<input id="tc" type="color" value="${t.c}" style="width:56px;padding:2px;margin:0"></div>
+<button class="btn p" style="margin-top:16px" onclick="tSave('${id||''}')">Save team</button>${id?`<button class="btn d" style="margin-top:10px" onclick="tDel('${id}')">Delete team</button>`:''}`)}
+function tSave(id){const n=$('#tn').value.trim(),c=$('#tc').value;if(!n)return toast('Enter a team name.',1);if(S.teams.some(t=>t.id!=id&&t.n.toLowerCase()==n.toLowerCase()))return toast('That team name is already used.',1);
+if(id)Object.assign(T(id),{n,c});else S.teams.push({id:uid(),n,c,pl:[]});save();closeM();render()}
+function tDel(id){if(S.matches.some(m=>m.h==id||m.a==id))return toast('This team has matches. Rename it instead.',1);ask('Delete this team?',()=>{S.teams=S.teams.filter(t=>t.id!=id);save();render()})}
+function lineup(id){const t=T(id),at=S.att[today()]||{};if(!S.players.length)return toast('Add players first.',1);
+const l=[...S.players].sort((a,b)=>(at[b.id]=='A')-(at[a.id]=='A'));
+mod(`<h2>${E(t.n)} lineup</h2><div class="mut">Tick players for this team. Ticking a player moves them from another team.</div>${l.map(p=>{const o=S.teams.find(x=>x.id!=id&&x.pl.includes(p.id));return`<label class="row" style="color:var(--tx);padding:6px 0;font-size:15px;margin:0"><input type="checkbox" class="lc" value="${p.id}" ${t.pl.includes(p.id)?'checked':''} style="width:22px;margin:0">${av(p,34)}<span class="col">${E(p.n)}<div class="mut">${stl[at[p.id]]||'Not set'}${o?' · now in '+E(o.n):''}</div></span></label>`}).join('')}<button class="btn p" style="margin-top:14px" onclick="lSave('${id}')">Save lineup</button>`)}
+function lSave(id){const ids=[...document.querySelectorAll('.lc:checked')].map(x=>x.value);S.teams.forEach(t=>t.pl=t.id==id?ids:t.pl.filter(x=>!ids.includes(x)));save();closeM();render()}
+/* MATCHES */
+function Matches(){const ms=dm(today()),days=[...new Set(S.matches.map(m=>m.d))].filter(d=>d!=today()).sort().reverse();
+return hd('Matches')+`<button class="btn p" onclick="nmModal()">+ New match</button><div style="height:14px"></div>`+(ms.length?ms.map(mrow).join(''):empty('⚽','No matches today. Start the first one.'))+(days.length?`<b>Previous Sundays</b><div style="height:8px"></div>`+days.map(d=>{const x=started(dm(d));return`<div class="card row sp" onclick="D='${d}';go('report')"><span>${fd(d)}</span><span class="mut">${x.length} matches ›</span></div>`}).join(''):'')}
+function nmModal(){if(S.teams.length<2){toast('Create at least two teams first.',1);return go('teams')}
+const o=i=>S.teams.map((t,k)=>`<option value="${t.id}" ${k==i?'selected':''}>${E(t.n)} (${t.pl.length})</option>`).join('');
+mod(`<h2>New match</h2><label>Home team</label><select id="nh">${o(0)}</select><label>Away team</label><select id="na">${o(1)}</select><label>Duration (minutes)</label><input id="nd" type="number" value="15" min="1" max="120"><div class="mut" style="margin-top:8px">Lineups are saved with the match. When time is up you get a sound and a vibration.</div><button class="btn p" style="margin-top:16px" onclick="nmSave()">Create and start match</button>`)}
+function nmSave(){const h=$('#nh').value,a=$('#na').value,d=+$('#nd').value;if(h==a)return toast('Choose two different teams.',1);if(!(d>=1&&d<=120))return toast('Duration must be 1–120 minutes.',1);
+const th=T(h),ta=T(a);if(!th.pl.length||!ta.pl.length)return toast('Both teams need players. Open Teams, then Manage lineup.',1);
+const dup=th.pl.filter(x=>ta.pl.includes(x));if(dup.length)return toast(P(dup[0]).n+' is in both teams.',1);
+const m={id:uid(),d:today(),h,a,lh:[...th.pl],la:[...ta.pl],dur:d,st:'live',el:0,run:true,t0:Date.now(),ev:[],ts:Date.now()};unlock();S.matches.push(m);save();closeM();go('match',m.id)}
+/* LIVE MATCH */
+function Match(){const m=M(sub);if(!m)return hd('Match','matches')+empty('?','Match not found.');const[h,a]=sc(m),c=cur(m);
+const ev=[...m.ev].sort((x,y)=>y.min-x.min||y.ts-x.ts),ic={goal:'⚽',og:'🔴',y:'🟨',r:'🟥'};
+return hd('Live match','matches',`<button class="ib" onclick="mDel('${m.id}')">🗑</button>`)+`<div class="card" style="text-align:center;border-color:#1d6b39"><div class="row sp"><div style="width:30%">${jer(T(m.h).c,56)}<div><b>${E(T(m.h).n)}</b></div></div><div><div class="num big score">${h} - ${a}</div><span class="live ${m.st=='live'?'':'off'}">${m.st=='live'?(m.run?'LIVE':'PAUSED'):m.st=='done'?'FINISHED':'NOT STARTED'}</span></div><div style="width:30%">${jer(T(m.a).c,56)}<div><b>${E(T(m.a).n)}</b></div></div></div>
+<div class="num tm" style="margin-top:12px"><span id="tm">${mmss(Math.max(0,m.dur*60-c))}</span> <span class="mut" style="font-size:20px">left of ${m.dur}:00</span></div><div class="bar"><i id="pb" style="width:${Math.min(100,c/(m.dur*.6))}%"></i></div></div>
+<div class="grid" style="margin-bottom:10px">${m.st=='new'?`<button class="btn p" style="grid-column:span 2" onclick="mCtl('${m.id}','s')">▶ Start match</button>`:m.st=='live'?`${m.run?`<button class="btn" onclick="mCtl('${m.id}','p')">❚❚ Pause</button>`:`<button class="btn o" onclick="mCtl('${m.id}','r')">▶ Resume</button>`}<button class="btn d" onclick="mCtl('${m.id}','e')">■ End match</button>`:`<button class="btn" style="grid-column:span 2" onclick="mCtl('${m.id}','re')">Reopen match</button>`}</div>
+<button class="btn p" onclick="evModal('${m.id}')" style="padding:20px;font-size:20px">+ Add event</button><div style="height:14px"></div>
+<div class="row sp"><b>Event timeline</b>${m.ev.length?`<button class="btn s" onclick="undo('${m.id}')">↶ Undo last</button>`:''}</div><div style="height:8px"></div>
+<div class="card">${ev.length?ev.map(e=>`<div class="tab"><b class="g">${e.min}’</b><div>${ic[e.t]} <b>${E(P(e.p).n)}</b> <span class="mut">(${E(T(e.s=='H'?m.h:m.a).n)})</span>${e.t=='og'?' <span class="mut">own goal</span>':''}${e.a?`<div class="mut">Assist: ${E(P(e.a).n)}</div>`:''}</div><div><button class="x" onclick="evModal('${m.id}','${e.id}')">✎</button><button class="x" onclick="evDel('${m.id}','${e.id}')">✕</button></div></div>`).join(''):'<div class="mut" style="text-align:center;padding:10px">No events yet.</div>'}</div>
+<div class="card"><b>Player stats this match</b>${(()=>{const l=Object.entries(stats([m])).filter(x=>x[1].g||x[1].a||x[1].y||x[1].r||x[1].o);return l.length?l.map(x=>`<div class="tab"><span></span><span>${E(P(x[0]).n)}</span><span class="mut">⚽ ${x[1].g}${x[1].g?' ('+m.ev.filter(e=>e.t=='goal'&&e.p==x[0]).map(e=>e.min).sort((a,b)=>a-b).join('’, ')+'’)':''} · 🎯 ${x[1].a}${x[1].y?' · 🟨 '+x[1].y:''}${x[1].r?' · 🟥 '+x[1].r:''}</span></div>`).join(''):'<div class="mut">No stats yet.</div>'})()}</div>
+${[[m.h,m.lh],[m.a,m.la]].map(x=>`<b>${E(T(x[0]).n)} lineup</b><div class="pitch" style="margin:8px 0 14px">${x[1].map(i=>`<div>${av(P(i),42)}<div>${E(P(i).n.split(' ')[0])}</div></div>`).join('')}</div>`).join('')}`}
+function mCtl(id,k){const m=M(id);unlock();if(k=='s'){m.st='live';m.run=true;m.t0=Date.now();m.el=0}else if(k=='p'){m.el=cur(m);m.run=false}else if(k=='r'){m.run=true;m.t0=Date.now()}else if(k=='e'){ask('End this match now?',()=>finish(m,0));return}else if(k=='re'){m.st='live';m.run=false}save();render()}
+function mDel(id){ask('Delete this match and all its events?',()=>{S.matches=S.matches.filter(m=>m.id!=id);save();go('matches')})}
+function undo(id){const m=M(id),l=[...m.ev].sort((a,b)=>b.ts-a.ts)[0];if(l)ask('Undo the last event?',()=>{m.ev=m.ev.filter(e=>e!=l);save();render()})}
+function evDel(id,e){ask('Delete this event? Score and stats will update.',()=>{const m=M(id);m.ev=m.ev.filter(x=>x.id!=e);save();render()})}
+function evModal(id,eid){const m=M(id),e=m.ev.find(x=>x.id==eid)||{t:'goal',s:'H',p:'',a:'',min:Math.min(m.dur,Math.floor(cur(m)/60)+1)};evS={id,eid,t:e.t,s:e.s,p:e.p,a:e.a||''};
+mod(`<h2>${eid?'Edit event':'Add event'}</h2><div class="chips" style="margin-top:10px">${[['goal','⚽ Goal'],['og','Own goal'],['y','🟨 Yellow'],['r','🟥 Red']].map(x=>`<button class="chip ${evS.t==x[0]?'on':''}" id="t_${x[0]}" onclick="evT('${x[0]}')">${x[1]}</button>`).join('')}</div>
+<label>Team</label><select id="es" onchange="evS.p='';evS.a='';evP()"><option value="H" ${e.s=='H'?'selected':''}>${E(T(m.h).n)}</option><option value="A" ${e.s=='A'?'selected':''}>${E(T(m.a).n)}</option></select>
+<label id="lp">Goal scorer</label><select id="ep"></select><div id="ag"><label>Assist (optional)</label><select id="ea"></select></div><label>Time of goal (auto from match clock, editable)</label><input id="em" type="number" min="0" max="120" oninput="this.dataset.t=1" value="${e.min}">
+<button class="btn p" style="margin-top:16px" onclick="evSave()">Save event</button>`);evP()}
+function evT(t){evS.t=t;['goal','og','y','r'].forEach(k=>$('#t_'+k).classList.toggle('on',k==t));evP()}
+function evP(){const m=M(evS.id),l=$('#es').value=='H'?'H':'A',ids=l=='H'?m.lh:m.la,o=(a,s)=>a.map(i=>`<option value="${i}" ${i==s?'selected':''}>${E(P(i).n)}</option>`).join('');evS.s=l;
+$('#ep').innerHTML=o(ids,evS.p);$('#ea').innerHTML='<option value="">None</option>'+o(ids,evS.a);$('#ag').style.display=evS.t=='goal'?'block':'none';$('#lp').textContent=evS.t=='goal'?'Goal scorer':'Player'}
+function evSave(){const m=M(evS.id),p=$('#ep').value,a=evS.t=='goal'?$('#ea').value:'',min=(!evS.eid&&!$('#em').dataset.t&&m.st=='live')?Math.min(m.dur,Math.floor(cur(m)/60)+1):+$('#em').value;if(!p)return toast('Select a player.',1);if(a&&a==p)return toast('Scorer and assist must be different players.',1);if(!(min>=0))return toast('Enter a valid minute.',1);
+const o={t:evS.t,s:evS.s,p,a,min};
+if(evS.eid)Object.assign(m.ev.find(x=>x.id==evS.eid),o);else m.ev.push({id:uid(),ts:Date.now(),...o});save();closeM();toast('Event saved');render()}
+/* STATS */
+function Stats(){const ms=started(scope=='day'?dm(D):S.matches),st=stats(ms),f={g:x=>x.g,a:x=>x.a,c:x=>x.g+x.a,m:x=>x.m}[lb];
+const l=Object.entries(st).map(([i,x])=>[i,f(x)]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
+const days=[...new Set(S.matches.map(m=>m.d))].sort().reverse();
+return hd('Player stats')+`<div class="chips">${[['day','Session'],['all','All time']].map(x=>`<button class="chip ${scope==x[0]?'on':''}" onclick="scope='${x[0]}';render()">${x[1]}</button>`).join('')}</div><div class="chips">${[['g','Goals'],['a','Assists'],['c','Goals + assists'],['m','Matches']].map(x=>`<button class="chip ${lb==x[0]?'on':''}" onclick="lb='${x[0]}';render()">${x[1]}</button>`).join('')}</div>
+<div class="card">${l.length?l.map((x,k)=>`<div class="tab"><b>${k&&l[k-1][1]==x[1]?'–':k+1}</b><div class="row">${av(P(x[0]),34)}<span>${E(P(x[0]).n)}</span></div><b class="num g" style="font-size:22px">${x[1]}</b></div>`).join(''):empty('▥','No stats yet. They appear after you record match events.')}</div>
+<div class="grid"><button class="btn p" onclick="D=today();go('awards')">🏆 Sunday awards</button><button class="btn o" onclick="D=today();go('report')">Full report</button></div><div style="height:14px"></div><b>Past sessions</b><div style="height:8px"></div>
+${days.length?days.map(d=>{const x=started(dm(d)),s=stats(x),g=Object.values(s).reduce((t,v)=>t+v.g,0),a=Object.values(s).reduce((t,v)=>t+v.a,0);return`<div class="card row sp" onclick="D='${d}';go('report')"><div><b>${fd(d)}</b><div class="mut">${x.length} matches · ${g} goals · ${a} assists</div></div>›</div>`}).join(''):'<div class="mut">No sessions yet.</div>'}`}
+/* AWARDS */
+function awards(ms){const st=stats(ms),mo=motm(ms);return{st,mo,list:[['Golden Boot','Most goals',topOf(st,x=>x.g),'#ffc233','🏆','Goals'],['Playmaker Award','Most assists',topOf(st,x=>x.a),'#39ff6a','🎯','Assists'],['Highest goal contributions','Goals + assists',topOf(st,x=>x.g+x.a),'#c77dff','⭐','Contributions'],['Most appearances','Matches played',topOf(st,x=>x.m),'#4da3ff','👟','Matches']]}}
+function Awards(){const ms=dm(D).filter(m=>m.st=='done'),{st,mo,list}=awards(ms);if(!ms.length)return hd('Sunday awards','stats')+empty('🏆','Awards unlock after at least one match is finished.');
+const w=S.motm[D]||(mo[0]&&mo[0][0]),cand=mo.slice(0,3);
+return hd('Sunday awards','stats')+`<div class="mut" style="margin:-8px 0 10px">${fd(D)}</div>`+list.map(a=>`<div class="tro" style="border-color:${a[3]};background:${a[3]}14"><div class="row"><span style="font-size:40px">${a[4]}</span><div class="col"><b style="color:${a[3]}">${a[0]}</b>${a[2]?a[2].ids.map(i=>`<div class="row" style="margin-top:4px">${av(P(i),28)}<b style="font-size:17px">${E(P(i).n)}</b><span class="mut">${a[2].v} ${a[5].toLowerCase()}</span><i style="width:10px;height:10px;border-radius:50%;background:${tcol(i,ms)}"></i></div>`).join(''):'<div class="mut">Nobody qualified yet</div>'}</div></div></div>`).join('')+
+`<div class="tro" style="border-color:var(--am);background:#ffc23314"><div class="row"><span style="font-size:40px">👑</span><div class="col"><b style="color:var(--am)">Man of the Match</b>${w?`<div class="row" style="margin-top:4px">${av(P(w),28)}<b style="font-size:17px">${E(P(w).n)}</b></div><div class="mut">${S.motm[D]?'Picked by the organizer':'Suggested by TurfTrack'}</div>`:''}</div></div>
+<div class="mut" style="margin-top:8px">Suggestion points: goal 3, assist 2, win 1, yellow −0.5, red or own goal −2. These are hints from the events you entered, so you decide.</div>${cand.map(c=>`<div class="mut">• ${E(P(c[0]).n)}: ${c[1]} pts</div>`).join('')}
+<label>Choose the winner</label><select onchange="S.motm[D]=this.value||undefined;save();render()"><option value="">Use suggestion</option>${S.players.map(p=>`<option value="${p.id}" ${S.motm[D]==p.id?'selected':''}>${E(p.n)}</option>`).join('')}</select></div><button class="btn p" onclick="go('report')">View full report</button>`}
+/* REPORT */
+function csv(ms){const st=stats(ms),q=v=>'"'+String(v).replace(/"/g,'""')+'"',r=[['TurfTrack report',fd(D)],[],['Match','Home','Away','Score']];
+ms.forEach((m,i)=>r.push([i+1,T(m.h).n,T(m.a).n,sc(m).join('-')]));r.push([],['Player','Matches','Goals','Assists','Contributions','Yellow','Red']);
+Object.entries(st).forEach(([i,x])=>r.push([P(i).n,x.m,x.g,x.a,x.g+x.a,x.y,x.r]));r.push([],['Award','Winner','Value']);
+awards(ms).list.forEach(a=>r.push([a[0],a[2]?a[2].ids.map(i=>P(i).n).join(' & '):'-',a[2]?a[2].v:'']));return r.map(x=>x.map(q).join(',')).join('\n')}
+const dn=()=>dm(D).filter(m=>m.st=='done');
+function dl(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv(dn())],{type:'text/csv'}));a.download='turftrack-'+D+'.csv';a.click()}
+function cp(){const c=csv(dn());(navigator.clipboard?navigator.clipboard.writeText(c):Promise.reject()).then(()=>toast('CSV copied. Paste it into a spreadsheet.')).catch(()=>mod(`<h2>CSV</h2><textarea style="width:100%;height:260px;background:#14201b;color:#fff" readonly>${E(c)}</textarea>`))}
+function Report(){const ms=dn(),{st,mo,list}=awards(ms),V=Object.values(st),tg=V.reduce((t,v)=>t+v.g,0),ta=V.reduce((t,v)=>t+v.a,0);
+const lbd=f=>Object.entries(st).map(([i,x])=>[i,f(x)]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]).slice(0,5).map((x,k)=>`<div class="tab"><b>${k+1}</b><div class="row">${av(P(x[0]),28)}${E(P(x[0]).n)}</div><b class="g">${x[1]}</b></div>`).join('')||'<div class="mut">None</div>';
+const w=S.motm[D]||(mo[0]&&mo[0][0]);
+return hd('Sunday report','stats')+`<div class="mut" style="margin:-8px 0 10px">${fd(D)}</div>`+(!ms.length?empty('▤','No finished matches for this session.'):`<div class="grid g3"><div class="card tile"><div class="num g">${tg}</div><div class="mut">Goals</div></div><div class="card tile"><div class="num g">${ta}</div><div class="mut">Assists</div></div><div class="card tile"><div class="num g">${ms.length}</div><div class="mut">Matches</div></div></div>
+<b>All matches</b><div style="height:8px"></div>${ms.map(mrow).join('')}<div class="card"><b>Top scorers</b>${lbd(x=>x.g)}</div><div class="card"><b>Goal log (time of each goal)</b>${ms.flatMap((m,i)=>m.ev.filter(e=>e.t=='goal').sort((a,b)=>a.min-b.min).map(e=>`<div class="tab"><b class="g">${e.min}’</b><span>${E(P(e.p).n)}${e.a?`<div class="mut">Assist: ${E(P(e.a).n)}</div>`:''}</span><span class="mut">Match ${i+1}</span></div>`)).join('')||'<div class="mut">No goals yet</div>'}</div><div class="card"><b>Top assisters</b>${lbd(x=>x.a)}</div>
+<div class="card"><b>Appearances</b>${Object.entries(st).map(([i,x])=>`<div class="tab"><span></span><span>${E(P(i).n)}</span><b>${x.m}</b></div>`).join('')}</div>
+<div class="card"><b>Award winners</b>${list.map(a=>`<div class="tab"><span>${a[4]}</span><span>${a[0]}<div class="mut">${a[2]?a[2].ids.map(i=>E(P(i).n)).join(', '):'–'}</div></span><b class="g">${a[2]?a[2].v:''}</b></div>`).join('')}<div class="tab"><span>👑</span><span>Man of the Match<div class="mut">${w?E(P(w).n):'–'}</div></span><span></span></div></div>
+<div class="card">${ms.length} matches produced ${tg} goals and ${ta} assists across ${V.length} players${w?'. Man of the Match: '+E(P(w).n):''}.</div>
+<div class="noprint grid"><button class="btn o" onclick="dl()">Download CSV</button><button class="btn o" onclick="cp()">Copy CSV</button><button class="btn o" style="grid-column:span 2" onclick="print()">Print / save as PDF</button><button class="btn" style="grid-column:span 2" onclick="go('awards')">🏆 Sunday awards</button></div>`)}
+render();setTimeout(()=>{$('#sp').style.opacity=0;setTimeout(()=>$('#sp').remove(),500)},1300);
+</script></body></html>
